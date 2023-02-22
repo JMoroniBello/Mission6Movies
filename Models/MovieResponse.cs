@@ -12,8 +12,7 @@ namespace Mission6Movies.Models
         [Key]
         [Required]
         public int MovieID { get; set; }
-        [Required]
-        public string Category { get; set; }
+       
         [Required]
         public string Title { get; set; }
         [Required]
@@ -28,6 +27,10 @@ namespace Mission6Movies.Models
         [StringLength(25)]
         public string Notes { get; set; }
 
+        //fk relationship
+        [Required]
+        public int CategoryId { get; set; }
+        public Category Category { get; set; }
 
     }
 }

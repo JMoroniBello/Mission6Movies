@@ -8,22 +8,35 @@ namespace Mission6Movies.Models
 {
     public class MovieRecordContext : DbContext
     {
+        //constructor
         public MovieRecordContext (DbContextOptions<MovieRecordContext> options): base(options)
         {
 
         }
 
-        public DbSet<MovieResponse> responses { get; set; }
-
+        public DbSet<MovieResponse> Responses { get; set; }
+        public DbSet<Category> Categories { get; set; }
         protected  override void OnModelCreating(ModelBuilder mb)
         {
+
+            mb.Entity<Category>().HasData(
+                new Category {CategoryId = 1, CategoryName = "Action/Adventure"},
+                new Category { CategoryId = 2, CategoryName = "Comedy" },
+                new Category { CategoryId = 3, CategoryName = "Drama" },
+                new Category { CategoryId = 4, CategoryName = "Family" },
+                new Category { CategoryId = 5, CategoryName = "Horror/Suspense" },
+                new Category { CategoryId = 6, CategoryName = "Miscellaneous" },
+                new Category { CategoryId = 7, CategoryName = "Television" },
+                new Category { CategoryId = 8, CategoryName = "VHS" }
+                );
+
             mb.Entity<MovieResponse>().HasData
                 (
                     //database seeded with 3 movies
                     new MovieResponse
                     {
                         MovieID = 1,
-                        Category = "Drama",
+                        CategoryId = 3,
                         Title = "Hacksaw Ridge",
                         Year = 2016,
                         Director = "Mel Gibson",
@@ -35,7 +48,7 @@ namespace Mission6Movies.Models
                     new MovieResponse
                     {
                         MovieID = 2,
-                        Category = "Horror/Suspense",
+                        CategoryId = 5,
                         Title = "A Quite Place",
                         Year = 2018,
                         Director = "John Krasinski",
@@ -47,7 +60,7 @@ namespace Mission6Movies.Models
                     new MovieResponse
                     {
                         MovieID = 3,
-                        Category = "Comedy",
+                        CategoryId = 2,
                         Title = "Hot Rod",
                         Year = 2007,
                         Director = "Akiva Schaffer",

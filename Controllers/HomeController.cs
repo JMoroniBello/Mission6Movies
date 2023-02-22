@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Mission6Movies.Models;
 using System;
@@ -11,51 +12,100 @@ namespace Mission6Movies.Controllers
 {
     public class HomeController : Controller
     {
-        private readonly ILogger<HomeController> _logger;
-        private MovieRecordContext _recordContext { get; set; }
+        private MovieRecordContext daContext { get; set; }
 
         //Constructor
-        public HomeController(ILogger<HomeController> logger, MovieRecordContext movie)
+        public HomeController(MovieRecordContext movie)
         {
-            _logger = logger;
-            _recordContext = movie;
+            daContext = movie;
         }
 
-        public IActionResult Index()
-        {
-            return View();
-        }
-
-        public IActionResult Privacy()
+        public IActionResult Index ()
         {
             return View();
         }
 
-        public IActionResult Podcasts()
+
+        public IActionResult Podcasts ()
         {
             return View();
         }
 
         [HttpGet]
-        public IActionResult AddMovies()
+        public IActionResult AddMovies ()
         {
-            return View();
+            ViewBag.Categories = daContext.Categories.ToList();
+
+            return View(new MovieResponse());
         }
 
         [HttpPost]
-        public IActionResult AddMovies(MovieResponse ar)
+        public IActionResult AddMovies (MovieResponse ar)
         {   
-            //record submitted movie in the database
-            _recordContext.Add(ar);
-            _recordContext.SaveChanges();
-            //return the same page for adding more movies
+            if (ModelState.IsValid)
+            {
+                //record submitted movie in the database
+                daContext.Add(ar);
+                daContext.SaveChanges();
+                //return the same page for adding more movies
+                return View("subValidation");
+            }
+            else
+            {
+                ViewBag.Categories = daContext.Categories.ToList();
+                return View(ar);
+            }
+            
+        }
+        
+        public IActionResult subValidation ()
+        {
             return View();
         }
 
-        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-        public IActionResult Error()
+        [HttpGet]
+        public IActionResult Library ()
         {
-            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+            var movies = daContext.Responses
+                .Include(x => x.Category)
+                .ToList();
+            return View(movies);
         }
+
+        [HttpGet]
+        public IActionResult Edit (int id)
+        {
+            ViewBag.Categories = daContext.Categories.ToList();
+
+            var movie = daContext.Responses.Single(x => x.MovieID == id);
+            return View("AddMovies", movie);
+        }
+
+        [HttpPost]
+        public IActionResult Edit(MovieResponse update)
+        {
+            daContext.Update(update);
+            daContext.SaveChanges();
+            return RedirectToAction("Library");
+        }
+
+
+
+        [HttpGet]
+        public IActionResult Delete (int id)
+        {
+            var movie = daContext.Responses.Single(x => x.MovieID == id);
+           
+            return View(movie);
+        }
+
+        [HttpPost]
+        public IActionResult Delete(MovieResponse mr)
+        {
+            daContext.Responses.Remove(mr);
+            daContext.SaveChanges();
+            return RedirectToAction("Library");
+        }
+
     }
 }

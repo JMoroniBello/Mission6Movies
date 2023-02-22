@@ -15,15 +15,70 @@ namespace Mission6Movies.Migrations
             modelBuilder
                 .HasAnnotation("ProductVersion", "3.1.32");
 
+            modelBuilder.Entity("Mission6Movies.Models.Category", b =>
+                {
+                    b.Property<int>("CategoryId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("CategoryName")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("CategoryId");
+
+                    b.ToTable("Categories");
+
+                    b.HasData(
+                        new
+                        {
+                            CategoryId = 1,
+                            CategoryName = "Action/Adventure"
+                        },
+                        new
+                        {
+                            CategoryId = 2,
+                            CategoryName = "Comedy"
+                        },
+                        new
+                        {
+                            CategoryId = 3,
+                            CategoryName = "Drama"
+                        },
+                        new
+                        {
+                            CategoryId = 4,
+                            CategoryName = "Family"
+                        },
+                        new
+                        {
+                            CategoryId = 5,
+                            CategoryName = "Horror/Suspense"
+                        },
+                        new
+                        {
+                            CategoryId = 6,
+                            CategoryName = "Miscellaneous"
+                        },
+                        new
+                        {
+                            CategoryId = 7,
+                            CategoryName = "Television"
+                        },
+                        new
+                        {
+                            CategoryId = 8,
+                            CategoryName = "VHS"
+                        });
+                });
+
             modelBuilder.Entity("Mission6Movies.Models.MovieResponse", b =>
                 {
                     b.Property<int>("MovieID")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
-                    b.Property<string>("Category")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
+                    b.Property<int>("CategoryId")
+                        .HasColumnType("INTEGER");
 
                     b.Property<string>("Director")
                         .IsRequired()
@@ -52,13 +107,15 @@ namespace Mission6Movies.Migrations
 
                     b.HasKey("MovieID");
 
+                    b.HasIndex("CategoryId");
+
                     b.ToTable("responses");
 
                     b.HasData(
                         new
                         {
                             MovieID = 1,
-                            Category = "Drama",
+                            CategoryId = 3,
                             Director = "Mel Gibson",
                             Edited = false,
                             LentTo = "",
@@ -70,7 +127,7 @@ namespace Mission6Movies.Migrations
                         new
                         {
                             MovieID = 2,
-                            Category = "Horror/Suspense",
+                            CategoryId = 5,
                             Director = "John Krasinski",
                             Edited = false,
                             LentTo = "",
@@ -82,7 +139,7 @@ namespace Mission6Movies.Migrations
                         new
                         {
                             MovieID = 3,
-                            Category = "Comedy",
+                            CategoryId = 2,
                             Director = "Akiva Schaffer",
                             Edited = false,
                             LentTo = "",
@@ -91,6 +148,15 @@ namespace Mission6Movies.Migrations
                             Title = "Hot Rod",
                             Year = 2007
                         });
+                });
+
+            modelBuilder.Entity("Mission6Movies.Models.MovieResponse", b =>
+                {
+                    b.HasOne("Mission6Movies.Models.Category", "Category")
+                        .WithMany()
+                        .HasForeignKey("CategoryId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 #pragma warning restore 612, 618
         }
